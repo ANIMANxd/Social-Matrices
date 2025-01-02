@@ -57,11 +57,14 @@ st.markdown("""
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "b90d566a-8de1-482e-a09f-81b7eb853eab"
 FLOW_ID = "b2747eff-cc7c-463d-82d3-9934a20f40f2"
-APPLICATION_TOKEN = os.environ.get("APP_TOKEN")
+APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 ENDPOINT = "myend"
 
 
 def run_flow(message: str) -> dict:
+    if not APPLICATION_TOKEN:
+        raise ValueError("APP_TOKEN is not configured. Please check your Streamlit secrets configuration.")
+        
     api_url = f"{BASE_API_URL}/lf/{LANGFLOW_ID}/api/v1/run/{ENDPOINT}"
     
     payload = {
@@ -72,6 +75,8 @@ def run_flow(message: str) -> dict:
     
     headers = {"Authorization": "Bearer " + APPLICATION_TOKEN, "Content-Type": "application/json"}
     response = requests.post(api_url, json=payload, headers=headers)
+    if response.status_code != 200:
+        raise Exception(f"API request failed with status {response.status_code}: {response.text}")
     return response.json()
 
 def main():
