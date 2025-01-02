@@ -1,12 +1,12 @@
 import requests
 import streamlit as st
 import os
-from dotenv import load_dotenv
+
 from datetime import datetime
 import re
 
 # Load environment variables
-load_dotenv()
+
 
 # Configure Streamlit page
 st.set_page_config(
