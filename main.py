@@ -53,11 +53,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# API Configuration
+
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "b90d566a-8de1-482e-a09f-81b7eb853eab"
 FLOW_ID = "b2747eff-cc7c-463d-82d3-9934a20f40f2"
-APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
+APPLICATION_TOKEN = "AstraCS:lWfZvgbLglgdpLZKAEZLMuYM:d88e03952b9a23bc0a1395156fd5953873a18e8959e567ddc93a18f050d80f62"
 ENDPOINT = "myend"
 
 
@@ -80,7 +80,7 @@ def run_flow(message: str) -> dict:
     return response.json()
 
 def main():
-    # Initialize session states
+    
     if 'current_stats' not in st.session_state:
         st.session_state.current_stats = {}
     if 'chat_history' not in st.session_state:
@@ -88,7 +88,7 @@ def main():
     if 'submitted' not in st.session_state:
         st.session_state.submitted = False
 
-    # Sidebar
+
     with st.sidebar:
         st.image("logo.jpg", caption="404BrainNotFound")
         st.markdown("---")
@@ -107,18 +107,18 @@ def main():
             </div>
         """, unsafe_allow_html=True)
     
-    # Main content
+
     st.title("🤖 SocialMatrices")
     st.markdown("#### Your AI-Powered Social Media Assistant developed by Team 404BrainNotFound")
     
-    # Chat container
+
     chat_container = st.container()
     with chat_container:
         for message in st.session_state.chat_history:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
     
-    # Form for input
+
     with st.form(key="message_form"):
         message = st.text_area(
             "Message",
@@ -131,7 +131,7 @@ def main():
         
         if submit_button and message.strip():
             try:
-                # Add user message to chat history
+               
                 st.session_state.chat_history.append({"role": "user", "content": message})
                 
                 with st.spinner("🤔 Thinking..."):
@@ -140,7 +140,7 @@ def main():
                 
             
                 
-                # Add assistant response to chat history
+                
                 st.session_state.chat_history.append({"role": "assistant", "content": response_text})
                 
                 st.session_state.submitted = True
@@ -149,7 +149,7 @@ def main():
             except Exception as e:
                 st.error(f"An error occurred: {str(e)}")
     
-    # Footer
+    
     st.markdown("---")
     footer_col1, footer_col2, footer_col3 = st.columns(3)
     with footer_col1:
