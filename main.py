@@ -60,45 +60,37 @@ FLOW_ID = "b2747eff-cc7c-463d-82d3-9934a20f40f2"
 APPLICATION_TOKEN = os.environ.get("APP_TOKEN")
 ENDPOINT = "myend"
 
-def extract_statistics(text):
-    """Extract numerical statistics from text."""
-    # Initialize stats dictionary
-    stats = {}
-    
-    # Find numbers with their surrounding context
-    patterns = [
-        (r'(\d+(?:\.\d+)?)\s*%', 'Percentage'),
-        (r'\$\s*(\d+(?:\.\d+)?)', 'Revenue'),
-        (r'(\d+(?:\.\d+)?)\s*users', 'Users'),
-        (r'(\d+(?:\.\d+)?)\s*people', 'People'),
-        (r'(\d+(?:\.\d+)?)\s*views', 'Views'),
-        (r'(\d+(?:\.\d+)?)\s*clicks', 'Clicks'),
-        (r'(\d+(?:\.\d+)?)\s*engagement', 'Engagement')
-    ]
-    
-    for pattern, label in patterns:
-        matches = re.finditer(pattern, text, re.IGNORECASE)
-        for i, match in enumerate(matches):
-            value = float(match.group(1))
-            start = max(0, match.start() - 30)
-            end = min(len(text), match.end() + 30)
-            context = text[start:end].strip()
-            stats[f"{label} {i+1}"] = {"value": value, "context": context}
-    
-    return stats
-
 def run_flow(message: str) -> dict:
-    api_url = f"{BASE_API_URL}/lf/{LANGFLOW_ID}/api/v1/run/{ENDPOINT}"
-    
-    payload = {
-        "input_value": message,
-        "output_type": "chat",
-        "input_type": "chat",
-    }
-    
-    headers = {"Authorization": "Bearer " + APPLICATION_TOKEN, "Content-Type": "application/json"}
-    response = requests.post(api_url, json=payload, headers=headers)
-    return response.json()
+    try:
+        api_url = f"{BASE_API_URL}/lf/{LANGFLOW_ID}/api/v1/run/{ENDPOINT}"
+        
+        payload = {
+            "input_value": message,
+            "output_type": "chat",
+            "input_type": "chat",
+        }
+        
+        headers = {"Authorization": "Bearer " + APPLICATION_TOKEN, "Content-Type": "application/json"}
+        response = requests.post(api_url, json=payload, headers=headers)
+        response_json = response.json()
+        
+        # Check if response has the expected structure
+        if (response_json and 
+            'outputs' in response_json and 
+            response_json['outputs'] and 
+            response_json['outputs'][0] and 
+            'outputs' in response_json['outputs'][0] and 
+            response_json['outputs'][0]['outputs'] and 
+            'results' in response_json['outputs'][0]['outputs'][0] and 
+            'message' in response_json['outputs'][0]['outputs'][0]['results'] and 
+            'text' in response_json['outputs'][0]['outputs'][0]['results']['message']):
+            return response_json
+        else:
+            raise ValueError("Invalid response format from API")
+            
+    except Exception as e:
+        st.error(f"API Error: {str(e)}")
+        return {"outputs": [{"outputs": [{"results": {"message": {"text": "I apologize, but I encountered an error processing your request. Please try again."}}}]}]}
 
 def main():
     # Initialize session states
@@ -157,21 +149,23 @@ def main():
                 
                 with st.spinner("🤔 Thinking..."):
                     response = run_flow(message)
-                    response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
-                
-                # Extract statistics from the response
-                stats = extract_statistics(response_text)
-                if stats:
-                    st.session_state.current_stats = stats
-                
-                # Add assistant response to chat history
-                st.session_state.chat_history.append({"role": "assistant", "content": response_text})
-                
+                    if response:  # Check if response exists
+                        response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+                        if response_text:  # Check if response_text exists
+                            # Extract statistics from the response
+                            stats = extract_statistics(response_text)
+                            if stats:
+                                st.session_state.current_stats = stats
+                            
+                            # Add assistant response to chat history
+                            st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+                    
                 st.session_state.submitted = True
                 st.rerun()
                 
             except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+                st.error("I apologize, but I encountered an error processing your request. Please try again.")
+                print(f"Debug - Error details: {str(e)}")  # For debugging
     
     # Footer
     st.markdown("---")
