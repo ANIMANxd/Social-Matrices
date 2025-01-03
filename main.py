@@ -95,6 +95,13 @@ def main():
         st.markdown("### About")
         st.write("This AI Social media analyzing tool was built for Level Super Mind Hackathon qualifying assignment. Developed by the team '404BrainNotFound'")
         st.markdown("---")
+        st.markdown("### Team Members")
+        st.write("""
+            - [Aniruddha](https://github.com/ANIMANxd)
+            - [Mahalaxmi]()
+            - [Nayaneka](https://github.com/nayanekaa)
+            - [Sanay]()""")
+        st.markdown("---")
         
         st.markdown("### GitHub Repository")
         st.markdown("""
