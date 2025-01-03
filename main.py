@@ -97,10 +97,10 @@ def main():
         st.markdown("---")
         st.markdown("### Team Members")
         st.write("""
-            - [Aniruddha](https://github.com/ANIMANxd)
-            - [Mahalaxmi]()
-            - [Nayaneka](https://github.com/nayanekaa)
-            - [Sanay]()""")
+            - [Aniruddha Bhide](https://github.com/ANIMANxd)
+            - [Mahalaxmi Singh]()
+            - [Nayaneka Yalavarthy](https://github.com/nayanekaa)
+            - [Sanay Krishna]()""")
         st.markdown("---")
         
         st.markdown("### GitHub Repository")
