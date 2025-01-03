@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import re
 
-# Load environment variables
+
 
 
 # Configure Streamlit page
@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS to improve the UI
+
 st.markdown("""
     <style>
         .stTextInput > div > div > input {
@@ -99,7 +99,7 @@ def main():
         st.markdown("### GitHub Repository")
         st.markdown("""
             <div style='text-align: ;'>
-                <a href='https://github.com/ANIMANxd/' target='_blank' class='github-link'>
+                <a href='https://github.com/ANIMANxd/Social-Matrices' target='_blank' class='github-link'>
                     <img src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png' 
                          width='50px' style='margin-bottom: 10px;'>
                     <br>
