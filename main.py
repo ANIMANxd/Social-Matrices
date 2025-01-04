@@ -21,8 +21,7 @@ st.markdown("""
         .stTextInput > div > div > input {
             background-color: #f0f6f6;
         }
-        .stTextArea > div > div > textarea {
-            background-color: #202224;
+        
         }
         .stButton > button {
             width: 100%;
