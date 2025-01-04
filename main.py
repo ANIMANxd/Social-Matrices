@@ -1,3 +1,5 @@
+
+
 import requests
 import streamlit as st
 import os
@@ -5,12 +7,14 @@ from datetime import datetime
 import pandas as pd
 import json
 
+
 st.set_page_config(
     page_title="SocialMatrices",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
 
 st.markdown("""
     <style>
@@ -101,10 +105,6 @@ def process_message(message: str):
     text_response = run_flow(message)
     response_text = text_response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
     
-    # Only proceed with visualization if "generate graph" is in the message
-    if "generate graph" not in message.lower():
-        return response_text, None
-        
     try:
         viz_response = call_langflow1(message)
         artifacts_message = viz_response.get("outputs", [{}])[0].get("outputs", [{}])[0].get("artifacts", {}).get("message")
@@ -114,7 +114,6 @@ def process_message(message: str):
                 json_data = json.loads(artifacts_message)
                 return response_text, json_data
             except json.JSONDecodeError:
-                st.error("Invalid visualization data received")
                 return response_text, None
         return response_text, None
     except Exception as e:
@@ -140,6 +139,7 @@ def display_chart(chart_type, data):
         elif chart_type == "histogram":
             st.bar_chart(chart_data.set_index("Category"))
         elif chart_type == "pie":
+            # Alternative display for pie chart
             st.write("Data for pie chart:")
             st.dataframe(chart_data)
         else:
@@ -148,6 +148,7 @@ def display_chart(chart_type, data):
         st.error(f"Error displaying chart: {str(e)}")
 
 def main():
+
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     
@@ -176,6 +177,7 @@ def main():
             </div>
         """, unsafe_allow_html=True)
     
+
     st.title("🤖 SocialMatrices")
     st.markdown("#### Your AI-Powered Social Media Assistant developed by Team 404BrainNotFound")
     st.markdown("### Instructions for Input Prompts:")
@@ -186,6 +188,7 @@ def main():
     """)
 
     chat_container = st.empty()
+    
 
     with st.form(key="message_form"):
         message = st.text_area(
@@ -209,6 +212,7 @@ def main():
                     if chart_type and chart_data:
                         st.subheader("Generated Visualization")
                         display_chart(chart_type, chart_data)
+    
 
     with chat_container.container():
         for msg in st.session_state.chat_history:
@@ -219,6 +223,7 @@ def main():
     footer_col1, footer_col2, footer_col3 = st.columns(3)
     with footer_col1:
         st.markdown("📊 Developed by Team 404BrainNotFound")
+    
 
 if __name__ == "__main__":
     main()
