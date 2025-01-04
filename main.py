@@ -224,8 +224,7 @@ def main():
     footer_col1, footer_col2, footer_col3 = st.columns(3)
     with footer_col1:
         st.markdown("📊 Developed by Team 404BrainNotFound")
-    with footer_col2:
-        st.markdown(f"🕒 Current Time: {datetime.now().strftime('%H:%M:%S')}")
+    
 
 if __name__ == "__main__":
     main()
