@@ -72,8 +72,9 @@ def run_flow(message: str) -> dict:
         response = requests.post(api_url, json=payload, headers=headers)
         response.raise_for_status()  
         return response.json()
-    except requests.exceptions.RequestException:
-        return {"outputs": [[{"results": {"message": {"text": ""}}}]]}
+    except requests.exceptions.RequestException as e:
+        st.error(f"API Error: {str(e)}")
+        return {"outputs": [[{"results": {"message": {"text": "Sorry, I encountered an error processing your request."}}}]]}
 
 def call_langflow1(message: str) -> dict:
     """Execute the second API call for visualization data"""
@@ -91,7 +92,8 @@ def call_langflow1(message: str) -> dict:
         response1 = requests.post(api_url1, json=payload, headers=headers1)
         response1.raise_for_status()
         return response1.json()
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        st.error(f"Visualization API Error: {str(e)}")
         return {}
 
 def process_message(message: str):
@@ -99,9 +101,10 @@ def process_message(message: str):
     text_response = run_flow(message)
     response_text = text_response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
     
+    # Only proceed with visualization if "generate graph" is in the message
     if "generate graph" not in message.lower():
         return response_text, None
-    
+        
     try:
         viz_response = call_langflow1(message)
         artifacts_message = viz_response.get("outputs", [{}])[0].get("outputs", [{}])[0].get("artifacts", {}).get("message")
@@ -109,13 +112,13 @@ def process_message(message: str):
         if artifacts_message:
             try:
                 json_data = json.loads(artifacts_message)
-                if not json_data or not isinstance(json_data.get("data", {}), dict):
-                    return response_text, None
                 return response_text, json_data
             except json.JSONDecodeError:
+                st.error("Invalid visualization data received")
                 return response_text, None
         return response_text, None
-    except Exception:
+    except Exception as e:
+        st.error(f"Visualization error: {str(e)}")
         return response_text, None
 
 def display_chart(chart_type, data):
@@ -124,20 +127,25 @@ def display_chart(chart_type, data):
         categories = data.get("categories", [])
         values = data.get("values", [])
         
-        if not categories or not values or len(categories) != len(values):
+        if not categories or not values:
+            st.warning("Invalid chart data received")
             return
             
         chart_data = pd.DataFrame({"Category": categories, "Value": values})
 
-        if chart_type in ["bar", "line", "histogram"]:
-            if chart_type == "bar":
-                st.bar_chart(chart_data.set_index("Category"))
-            elif chart_type == "line":
-                st.line_chart(chart_data.set_index("Category"))
-            else:  # histogram
-                st.bar_chart(chart_data.set_index("Category"))
-    except Exception:
-        pass
+        if chart_type == "bar":
+            st.bar_chart(chart_data.set_index("Category"))
+        elif chart_type == "line":
+            st.line_chart(chart_data.set_index("Category"))
+        elif chart_type == "histogram":
+            st.bar_chart(chart_data.set_index("Category"))
+        elif chart_type == "pie":
+            st.write("Data for pie chart:")
+            st.dataframe(chart_data)
+        else:
+            st.warning(f"Unsupported chart type: {chart_type}")
+    except Exception as e:
+        st.error(f"Error displaying chart: {str(e)}")
 
 def main():
     if 'chat_history' not in st.session_state:
@@ -191,21 +199,16 @@ def main():
         
         if submitted and message.strip():
             with st.spinner("🤔 Processing your request..."):
-                try:
-                    response_text, viz_data = process_message(message)
-                    st.session_state.chat_history.append({"role": "user", "content": message})
-                    st.session_state.chat_history.append({"role": "assistant", "content": response_text})
-                
-                    if viz_data and "generate graph" in message.lower():
-                        chart_type = viz_data.get("chart_type")
-                        chart_data = viz_data.get("data")
-                        if chart_type and chart_data:
-                            st.subheader("Generated Visualization")
-                            display_chart(chart_type, chart_data)
-                        else:
-                            st.write("No visualization data found.")
-                except Exception:
-                    pass
+                response_text, viz_data = process_message(message)
+                st.session_state.chat_history.append({"role": "user", "content": message})
+                st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+            
+                if viz_data:
+                    chart_type = viz_data.get("chart_type")
+                    chart_data = viz_data.get("data")
+                    if chart_type and chart_data:
+                        st.subheader("Generated Visualization")
+                        display_chart(chart_type, chart_data)
 
     with chat_container.container():
         for msg in st.session_state.chat_history:
