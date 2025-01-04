@@ -1,4 +1,4 @@
-#main2.py
+
 
 import requests
 import streamlit as st
@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 import json
 
-# Configure Streamlit page
+
 st.set_page_config(
     page_title="SocialMatrices",
     page_icon="🤖",
@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS to improve the UI
+
 st.markdown("""
     <style>
         .stTextInput > div > div > input {
@@ -75,7 +75,7 @@ def run_flow(message: str) -> dict:
     
     try:
         response = requests.post(api_url, json=payload, headers=headers)
-        response.raise_for_status()  # Raise exception for bad status codes
+        response.raise_for_status()  
         return response.json()
     except requests.exceptions.RequestException as e:
         st.error(f"API Error: {str(e)}")
@@ -103,11 +103,9 @@ def call_langflow1(message: str) -> dict:
 
 def process_message(message: str):
     """Process both text and visualization in a single function"""
-    # Get text response
     text_response = run_flow(message)
     response_text = text_response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
     
-    # Get visualization data
     try:
         viz_response = call_langflow1(message)
         artifacts_message = viz_response.get("outputs", [{}])[0].get("outputs", [{}])[0].get("artifacts", {}).get("message")
@@ -151,11 +149,10 @@ def display_chart(chart_type, data):
         st.error(f"Error displaying chart: {str(e)}")
 
 def main():
-    # Initialize session states
+
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     
-    # Sidebar
     with st.sidebar:
         st.image("logo.jpg", caption="404BrainNotFound")
         st.markdown("---")
@@ -181,7 +178,7 @@ def main():
             </div>
         """, unsafe_allow_html=True)
     
-    # Main content
+
     st.title("🤖 SocialMatrices")
     st.markdown("#### Your AI-Powered Social Media Assistant developed by Team 404BrainNotFound")
     st.markdown("### Instructions for Input Prompts:")
@@ -190,11 +187,10 @@ def main():
         2. If you want to **generate graphs**, make sure to mention **'generate graph'** in your prompt.
         3. You can request bar charts, line charts, or histograms by specifying that in the prompt.
     """)
-    
-    # Chat container
+
     chat_container = st.empty()
     
-    # Form for input
+
     with st.form(key="message_form"):
         message = st.text_area(
             "Message",
@@ -207,14 +203,10 @@ def main():
         
         if submitted and message.strip():
             with st.spinner("🤔 Processing your request..."):
-                # Process message and get both text and visualization data
                 response_text, viz_data = process_message(message)
-                
-                # Add messages to chat history
                 st.session_state.chat_history.append({"role": "user", "content": message})
                 st.session_state.chat_history.append({"role": "assistant", "content": response_text})
-                
-                # Display visualization if available
+            
                 if viz_data:
                     chart_type = viz_data.get("chart_type")
                     chart_data = viz_data.get("data")
@@ -222,13 +214,12 @@ def main():
                         st.subheader("Generated Visualization")
                         display_chart(chart_type, chart_data)
     
-    # Display chat history
+
     with chat_container.container():
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
                 st.write(msg["content"])
     
-    # Footer
     st.markdown("---")
     footer_col1, footer_col2, footer_col3 = st.columns(3)
     with footer_col1:
