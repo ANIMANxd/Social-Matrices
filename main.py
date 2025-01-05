@@ -50,12 +50,12 @@ st.markdown("""
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "b90d566a-8de1-482e-a09f-81b7eb853eab"
 FLOW_ID = "b2747eff-cc7c-463d-82d3-9934a20f40f2"
-APPLICATION_TOKEN = "AstraCS:WpYXlHktWAZPJJCinEcBleAR:1126154f660ddf3ce9da55adcfddd492a167e84424e34a2bf314341f80d04fcd"
+APPLICATION_TOKEN = "AstraCS:FvfNzulYoDFdfuPfItyFAaoy:714ebcf21164cb368a3b00c69386f4aa24a334da59e11e54cf49558fe5152d66"
 ENDPOINT = "myend"
 
 LANGFLOW_ID1 = "b90d566a-8de1-482e-a09f-81b7eb853eab"
-FLOW_ID1 = "7b2a0d66-c104-45be-9e6a-4da6265db76c"
-APPLICATION_TOKEN1 = "AstraCS:GLsElqsSHgOLoxwdaLOOEKzA:5977dd882c8ae6dde5762fadc7235de17031e0bbc7ae270ddfb2ca6337c58d48"
+FLOW_ID1 =  "7b2a0d66-c104-45be-9e6a-4da6265db76c"
+APPLICATION_TOKEN1 = "AstraCS:YJLqMDbhYDZaOyLkWELoaxwH:8efa13bbec0e4a38b735e159bd99e6546e15c0e7e1719f308b6e6ee83c94f903"
 ENDPOINT1 = ""
 
 def run_flow(message: str) -> dict:
@@ -117,7 +117,7 @@ def process_message(message: str):
                 return response_text, None
         return response_text, None
     except Exception as e:
-        st.error(f"Visualization error: {str(e)}")
+        st.error(f"No visualization available for this prompt. Try asking something else!")
         return response_text, None
 
 def display_chart(chart_type, data):
@@ -127,7 +127,7 @@ def display_chart(chart_type, data):
         values = data.get("values", [])
         
         if not categories or not values:
-            st.warning("Invalid chart data received")
+            st.warning("No visualization available for this prompt. Try asking something else!")
             return
             
         chart_data = pd.DataFrame({"Category": categories, "Value": values})
@@ -143,9 +143,9 @@ def display_chart(chart_type, data):
             st.write("Data for pie chart:")
             st.dataframe(chart_data)
         else:
-            st.warning(f"Unsupported chart type: {chart_type}")
+            st.warning(f"No visualization available for this prompt. Try asking something else!")
     except Exception as e:
-        st.error(f"Error displaying chart: {str(e)}")
+        st.error(f"No visualization available for this prompt. Try asking something else!")
 
 def main():
 
@@ -183,7 +183,7 @@ def main():
     st.markdown("### Instructions for Input Prompts:")
     st.write("""
         1. Please provide **clear** and **concise** prompts.
-        2. If you want to **generate graphs**, make sure to mention **'generate graph'** in your prompt.
+        2. If you want to **generate graphs**, make sure to mention **'generate graph'** in your prompt, specify you want graph for which parameters.
         3. You can request bar charts, line charts, or histograms by specifying that in the prompt.
     """)
 
