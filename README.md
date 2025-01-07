@@ -2,7 +2,7 @@
 
 ## **1\. Introduction**
 
-The Social Metrics web application is a cutting-edge solution to analyze and evaluate social media content. Built using AstraDB and LangFlow integration for AI capabilities, the application provides insightful metrics on the quality, sentiment, and trends of social media content. The app has been hosted on Streamlit at [404 Brain Not Found \- Social Metrics App](https://404brainnotfound-level-super-mind.streamlit.app/) and is accessible via its GitHub repository, ensuring ease of deployment and accessibility for users.
+The Social Metrics web application is a cutting-edge solution to analyze and evaluate social media content. Built using AstraDB and LangFlow integration for AI capabilities, the application provides insightful metrics on the quality, sentiment, and trends of social media content. The app has been hosted on Streamlit at [404Brain Not Found \- Social Metrics App](https://404brainnotfound-level-super-mind.streamlit.app/) and is accessible via its GitHub repository, ensuring ease of deployment and accessibility for users.
 
 Team Members:
 
@@ -97,5 +97,5 @@ The Social Metrics web application is a powerful tool for analyzing social media
 
 ## **9\. References**
 
-* [404 BrainNotFound App](https://404brainnotfound-level-super-mind.streamlit.app/)  
+* [404BrainNotFound App](https://404brainnotfound-level-super-mind.streamlit.app/)  
 * [Demo video](https://youtu.be/mi5EbTXi7WI)
